@@ -144,7 +144,7 @@ export async function saveRoundScores(formData: FormData) {
       where: { gameId },
       data: { wentOuts: 0 },
     }),
-    ...wentOutWithPlayer.map((entry) =>
+    ...wentOutWithPlayer.map((entry: (typeof wentOutWithPlayer)[number]) =>
       prisma.gamePlayer.update({
         where: {
           gameId_playerId: {
