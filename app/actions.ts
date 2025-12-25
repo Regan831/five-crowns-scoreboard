@@ -133,11 +133,8 @@ export async function saveRoundScores(formData: FormData) {
   });
 
   const wentOutWithPlayer = wentOutCounts.filter(
-    (
-      entry,
-    ): entry is (typeof wentOutCounts)[number] & {
-      wentOutPlayerId: string;
-    } => Boolean(entry.wentOutPlayerId),
+    (entry): entry is (typeof wentOutCounts)[number] & { wentOutPlayerId: string } =>
+      Boolean(entry.wentOutPlayerId),
   );
 
   await prisma.$transaction([
