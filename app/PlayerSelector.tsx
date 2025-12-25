@@ -12,15 +12,17 @@ const STORAGE_KEY = "five-crowns-selected-players";
 
 export default function PlayerSelector({ players }: Props) {
   const [query, setQuery] = useState("");
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-
-  useEffect(() => {
-    const saved = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
-    if (saved) {
+  const [selected, setSelected] = useState<Set<string>>(() => {
+    if (typeof window === "undefined") return new Set();
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return new Set();
+    try {
       const names: string[] = JSON.parse(saved);
-      setSelected(new Set(names));
+      return new Set(names);
+    } catch {
+      return new Set();
     }
-  }, []);
+  });
 
   useEffect(() => {
     if (typeof window === "undefined") return;

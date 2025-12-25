@@ -133,7 +133,9 @@ export async function saveRoundScores(formData: FormData) {
   });
 
   const wentOutWithPlayer = wentOutCounts.filter(
-    (entry): entry is (typeof wentOutCounts)[number] & { wentOutPlayerId: string } =>
+    (
+      entry: (typeof wentOutCounts)[number],
+    ): entry is (typeof wentOutCounts)[number] & { wentOutPlayerId: string } =>
       Boolean(entry.wentOutPlayerId),
   );
 
