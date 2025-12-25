@@ -185,7 +185,10 @@ export async function completeGame(formData: FormData) {
 
   const lowestScore = totals.length
     ? Math.min(
-        ...totals.map((entry) => entry._sum.score ?? Number.POSITIVE_INFINITY),
+        ...totals.map(
+          (entry: (typeof totals)[number]) =>
+            entry._sum.score ?? Number.POSITIVE_INFINITY,
+        ),
       )
     : null;
 
@@ -194,7 +197,7 @@ export async function completeGame(formData: FormData) {
       where: { gameId },
       data: { isWinner: false },
     }),
-    ...totals.map((entry) =>
+    ...totals.map((entry: (typeof totals)[number]) =>
       prisma.gamePlayer.update({
         where: { gameId_playerId: { gameId, playerId: entry.playerId } },
         data: {
