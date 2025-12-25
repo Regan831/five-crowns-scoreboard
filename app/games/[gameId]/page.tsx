@@ -58,16 +58,25 @@ export default async function GamePage({ params, searchParams }: GamePageProps) 
     });
   });
 
-  const winners = game.players.filter((player) => player.isWinner);
-  const leaderboard = game.players
-    .map((p) => ({
+  const winners = game.players.filter(
+    (player: (typeof game.players)[number]) => player.isWinner,
+  );
+  type LeaderboardEntry = { name: string; total: number; isWinner: boolean };
+  const leaderboard: LeaderboardEntry[] = game.players
+    .map((p: (typeof game.players)[number]): LeaderboardEntry => ({
       name: p.player.name,
       total: totals.get(p.playerId) ?? 0,
       isWinner: p.isWinner,
     }))
-    .sort((a, b) => a.total - b.total);
+    .sort(
+      (
+        a: LeaderboardEntry,
+        b: LeaderboardEntry,
+      ) => a.total - b.total,
+    );
   const allRoundsScored = game.rounds.every(
-    (round) => round.scores.length === game.players.length,
+    (round: (typeof game.rounds)[number]) =>
+      round.scores.length === game.players.length,
   );
   return (
     <main className="min-h-screen bg-white text-slate-900">
@@ -102,7 +111,7 @@ export default async function GamePage({ params, searchParams }: GamePageProps) 
         <div className="flex justify-center">
           <div className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-slate-100 p-5 shadow-sm">
             <div className="flex flex-col gap-3 text-base">
-              {leaderboard.map((entry, index) => (
+              {leaderboard.map((entry: LeaderboardEntry, index: number) => (
                 <div
                   key={entry.name}
                   className="flex items-center justify-between rounded-xl border border-slate-200 bg-white/80 px-4 py-3 shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
@@ -151,9 +160,20 @@ export default async function GamePage({ params, searchParams }: GamePageProps) 
         </div>
 
         <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-          <span>Rounds: {game.rounds.filter((r) => r.scores.length > 0).length}/11</span>
+          <span>
+            Rounds:{" "}
+            {game.rounds.filter(
+              (r: (typeof game.rounds)[number]) => r.scores.length > 0,
+            ).length}
+            /11
+          </span>
           {winners.length > 0 && (
-            <span>Winner(s): {winners.map((w) => w.player.name).join(", ")}</span>
+            <span>
+              Winner(s):{" "}
+              {winners
+                .map((w: (typeof winners)[number]) => w.player.name)
+                .join(", ")}
+            </span>
           )}
           {canEdit && (
             <span className="font-mono bg-slate-100 px-2 py-1 rounded">
@@ -176,12 +196,14 @@ export default async function GamePage({ params, searchParams }: GamePageProps) 
               </div>
               {game.status === "COMPLETED" && winners.length > 0 && (
                 <span className="rounded-full bg-slate-900 px-3 py-1 text-xs font-semibold text-white">
-                  {winners.map((w) => w.player.name).join(", ")}
+                  {winners
+                    .map((w: (typeof winners)[number]) => w.player.name)
+                    .join(", ")}
                 </span>
               )}
             </div>
             <ol className="mt-3 space-y-2 text-sm">
-              {leaderboard.map((entry, index) => (
+              {leaderboard.map((entry: LeaderboardEntry, index: number) => (
                 <li
                   key={entry.name}
                   className="flex items-center justify-between rounded border border-slate-100 px-3 py-2"

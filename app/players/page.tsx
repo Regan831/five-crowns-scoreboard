@@ -22,27 +22,42 @@ export default async function PlayersPage() {
     },
   });
 
-  const rows: PlayerRow[] = players.map((player) => {
+  type PlayerWithStats = (typeof players)[number];
+
+  const rows: PlayerRow[] = players.map((player: PlayerWithStats) => {
     const completedGames = player.gamePlayers.filter(
-      (gp) => gp.game.status === "COMPLETED",
+      (gp: PlayerWithStats["gamePlayers"][number]) =>
+        gp.game.status === "COMPLETED",
     );
     const games = completedGames.length;
-    const wins = completedGames.filter((gp) => gp.isWinner).length;
+    const wins = completedGames.filter(
+      (gp: PlayerWithStats["gamePlayers"][number]) => gp.isWinner,
+    ).length;
     const winRate = games > 0 ? Math.round((wins / games) * 100) : 0;
     const finals = completedGames
-      .map((gp) => gp.finalTotal)
-      .filter((val): val is number => val !== null && val !== undefined);
+      .map((gp: PlayerWithStats["gamePlayers"][number]) => gp.finalTotal)
+      .filter(
+        (val: PlayerWithStats["gamePlayers"][number]["finalTotal"]): val is number =>
+          val !== null && val !== undefined,
+      );
     const avgScore =
       finals.length > 0
         ? Math.round(
-            finals.reduce((sum, val) => sum + val, 0) / finals.length,
+            finals.reduce(
+              (sum: number, val: number) => sum + val,
+              0,
+            ) / finals.length,
           )
         : null;
     const highScore = finals.length > 0 ? Math.max(...finals) : null;
     const lowScore = finals.length > 0 ? Math.min(...finals) : null;
     const highestRound =
       player.roundScores.length > 0
-        ? Math.max(...player.roundScores.map((r) => r.score))
+        ? Math.max(
+            ...player.roundScores.map(
+              (r: PlayerWithStats["roundScores"][number]) => r.score,
+            ),
+          )
         : null;
 
     return {

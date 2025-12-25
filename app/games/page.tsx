@@ -35,7 +35,11 @@ export default async function GamesIndex({ searchParams }: PageProps) {
     },
   });
 
-  const filteredGames = games.filter((game) => game.status === statusFilter);
+  type GameWithPlayers = (typeof games)[number];
+
+  const filteredGames = games.filter(
+    (game: GameWithPlayers) => game.status === statusFilter,
+  );
   console.log(
     "[games/page] statusParam:",
     statusParam,
@@ -115,10 +119,10 @@ export default async function GamesIndex({ searchParams }: PageProps) {
             </tr>
           </thead>
           <tbody>
-            {filteredGames.map((game) => {
+            {filteredGames.map((game: GameWithPlayers) => {
               const winners = game.players
-                .filter((gp) => gp.isWinner)
-                .map((gp) => gp.player.name);
+                .filter((gp: GameWithPlayers["players"][number]) => gp.isWinner)
+                .map((gp: GameWithPlayers["players"][number]) => gp.player.name);
               return (
                 <tr key={game.id} className="odd:bg-white even:bg-slate-50/60">
                   <td className="border-b border-slate-200 px-4 py-3 text-slate-700">
@@ -128,7 +132,9 @@ export default async function GamesIndex({ searchParams }: PageProps) {
                     </div>
                   </td>
                   <td className="border-b border-slate-200 px-4 py-3 text-slate-700">
-                    {game.players.map((gp) => gp.player.name).join(", ")}
+                    {game.players
+                      .map((gp: GameWithPlayers["players"][number]) => gp.player.name)
+                      .join(", ")}
                   </td>
                   <td className="border-b border-slate-200 px-4 py-3 text-slate-700">
                     {winners.length ? winners.join(", ") : "—"}

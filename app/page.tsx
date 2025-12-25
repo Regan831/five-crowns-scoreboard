@@ -10,8 +10,12 @@ export default async function Home() {
     },
   });
 
-  const existingWithWins = existingPlayers.map((p) => {
-    const wins = p.gamePlayers.filter((gp) => gp.isWinner).length;
+  type ExistingPlayer = (typeof existingPlayers)[number];
+
+  const existingWithWins = existingPlayers.map((p: ExistingPlayer) => {
+    const wins = p.gamePlayers.filter(
+      (gp: ExistingPlayer["gamePlayers"][number]) => gp.isWinner,
+    ).length;
     return { id: p.id, name: p.name, wins };
   });
 
