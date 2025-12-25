@@ -52,7 +52,7 @@ export default async function GamePage({ params, searchParams }: GamePageProps) 
   const canEdit = resolvedSearchParams?.key === game.secretKey;
   const totals = new Map<string, number>();
   game.rounds.forEach((round: (typeof game.rounds)[number]) => {
-    round.scores.forEach((score) => {
+    round.scores.forEach((score: (typeof round.scores)[number]) => {
       const current = totals.get(score.playerId) ?? 0;
       totals.set(score.playerId, current + score.score);
     });
