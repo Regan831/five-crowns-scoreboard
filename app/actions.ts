@@ -132,24 +132,30 @@ export async function saveRoundScores(formData: FormData) {
     _count: true,
   });
 
+  const wentOutWithPlayer = wentOutCounts.filter(
+    (
+      entry,
+    ): entry is (typeof wentOutCounts)[number] & {
+      wentOutPlayerId: string;
+    } => Boolean(entry.wentOutPlayerId),
+  );
+
   await prisma.$transaction([
     prisma.gamePlayer.updateMany({
       where: { gameId },
       data: { wentOuts: 0 },
     }),
-    ...wentOutCounts
-      .filter((entry) => entry.wentOutPlayerId)
-      .map((entry) =>
-        prisma.gamePlayer.update({
-          where: {
-            gameId_playerId: {
-              gameId,
-              playerId: entry.wentOutPlayerId!,
-            },
+    ...wentOutWithPlayer.map((entry) =>
+      prisma.gamePlayer.update({
+        where: {
+          gameId_playerId: {
+            gameId,
+            playerId: entry.wentOutPlayerId,
           },
-          data: { wentOuts: entry._count },
-        }),
-      ),
+        },
+        data: { wentOuts: entry._count },
+      }),
+    ),
   ]);
 
   revalidatePath(`/games/${gameId}`);
