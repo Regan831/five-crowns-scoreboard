@@ -5,6 +5,9 @@ import prisma from "@/lib/prisma";
 import RoundsTable from "./RoundsTable";
 import CompleteGamePrompt from "./CompleteGamePrompt";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 type GamePageProps = {
   params: { gameId: string } | Promise<{ gameId: string }>;
   searchParams?: { key?: string } | Promise<{ key?: string }>;
