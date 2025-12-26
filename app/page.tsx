@@ -1,3 +1,4 @@
+import { PHASE_PRODUCTION_BUILD } from "next/constants";
 import prisma from "@/lib/prisma";
 import { createGame } from "./actions";
 import PlayerSelector from "./PlayerSelector";
@@ -6,6 +7,23 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function Home() {
+  if (process.env.NEXT_PHASE === PHASE_PRODUCTION_BUILD) {
+    return (
+      <main className="min-h-screen bg-white text-slate-900">
+        <div className="mx-auto flex max-w-3xl flex-col gap-8 px-5 py-14">
+          <header className="space-y-3 text-center">
+            <h1 className="text-3xl font-semibold text-slate-900">
+              Start a game
+            </h1>
+            <p className="text-sm text-slate-600">
+              Pick 2–7 players. Choose from existing or add new names as you type.
+            </p>
+          </header>
+        </div>
+      </main>
+    );
+  }
+
   const existingPlayers = await prisma.player.findMany({
     orderBy: { name: "asc" },
     include: {

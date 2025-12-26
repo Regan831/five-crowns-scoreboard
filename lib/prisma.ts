@@ -12,7 +12,16 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is not set");
 }
 
-const pool = new Pool({ connectionString });
+const allowInsecure = process.env.DATABASE_SSL_INSECURE === "true";
+
+if (allowInsecure) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
+
+const pool = new Pool({
+  connectionString,
+  ssl: allowInsecure ? { rejectUnauthorized: false } : undefined,
+});
 const adapter = new PrismaPg(pool);
 
 const prisma = global.prisma || new PrismaClient({ adapter });

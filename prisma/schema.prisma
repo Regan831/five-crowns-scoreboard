@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,79 +6,79 @@ datasource db {
   provider = "postgresql"
 }
 
-enum GameStatus {
-  IN_PROGRESS
-  COMPLETED
-}
-
 model Player {
-  id          String        @id @default(cuid())
-  name        String        @unique
-  slug        String        @unique
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id          String       @id @default(cuid())
+  name        String       @unique
+  slug        String       @unique
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   gamePlayers GamePlayer[]
+  wentOutFor  Round[]      @relation("RoundWentOutPlayer")
   roundScores RoundScore[]
-  wentOutFor  Round[]       @relation("RoundWentOutPlayer")
 }
 
 model Game {
-  id            String        @id @default(cuid())
-  title         String?
-  status        GameStatus    @default(IN_PROGRESS)
-  secretKey     String        @unique
-  createdAt     DateTime      @default(now())
-  completedAt   DateTime?
-  rounds        Round[]
-  players       GamePlayer[]
-  roundScores   RoundScore[]
+  id          String       @id @default(cuid())
+  title       String?
+  status      GameStatus   @default(IN_PROGRESS)
+  secretKey   String       @unique
+  createdAt   DateTime     @default(now())
+  completedAt DateTime?
+  players     GamePlayer[]
+  rounds      Round[]
+  roundScores RoundScore[]
 }
 
 model GamePlayer {
-  id          String   @id @default(cuid())
-  game        Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  gameId      String
-  player      Player   @relation(fields: [playerId], references: [id], onDelete: Restrict)
-  playerId    String
-  seat        Int
-  finalTotal  Int?
-  isWinner    Boolean  @default(false)
-  wentOuts    Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(cuid())
+  gameId     String
+  playerId   String
+  seat       Int
+  finalTotal Int?
+  isWinner   Boolean  @default(false)
+  wentOuts   Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  game       Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  player     Player   @relation(fields: [playerId], references: [id])
 
   @@unique([gameId, playerId])
   @@unique([gameId, seat])
 }
 
 model Round {
-  id              String   @id @default(cuid())
-  game            Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  id              String       @id @default(cuid())
   gameId          String
   roundNumber     Int
-  wentOutPlayer   Player?  @relation("RoundWentOutPlayer", fields: [wentOutPlayerId], references: [id], onDelete: SetNull)
   wentOutPlayerId String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  game            Game         @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  wentOutPlayer   Player?      @relation("RoundWentOutPlayer", fields: [wentOutPlayerId], references: [id])
   scores          RoundScore[]
 
   @@unique([gameId, roundNumber])
 }
 
 model RoundScore {
-  id         String   @id @default(cuid())
-  game       Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
-  gameId     String
-  round      Round    @relation(fields: [roundId], references: [id], onDelete: Cascade)
-  roundId    String
-  player     Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
-  playerId   String
-  score      Int
-  wentOut    Boolean  @default(false)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        String   @id @default(cuid())
+  gameId    String
+  roundId   String
+  playerId  String
+  score     Int
+  wentOut   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  player    Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  round     Round    @relation(fields: [roundId], references: [id], onDelete: Cascade)
 
   @@unique([roundId, playerId])
   @@index([gameId, playerId])
   @@index([roundId, score])
+}
+
+enum GameStatus {
+  IN_PROGRESS
+  COMPLETED
 }
