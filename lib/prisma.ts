@@ -12,7 +12,9 @@ if (!connectionString) {
   throw new Error("DATABASE_URL is not set");
 }
 
-const allowInsecure = process.env.DATABASE_SSL_INSECURE === "true";
+const allowInsecure =
+  process.env.DATABASE_SSL_INSECURE === "true" &&
+  process.env.NODE_ENV !== "production";
 
 if (allowInsecure) {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
